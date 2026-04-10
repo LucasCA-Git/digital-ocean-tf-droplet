@@ -1,3 +1,6 @@
+data "digitalocean_project" "lab" {
+  name = "lab-cicd"
+}
 module "network" {
   source = "./modules/network"
 
@@ -15,4 +18,12 @@ module "droplet" {
   image    = var.image
   vpc_id   = module.network.vpc_id
   ssh_keys = var.ssh_keys
+}
+
+resource "digitalocean_project_resources" "attach" {
+  project = data.digitalocean_project.lab.id
+
+  resources = [
+    module.droplet.droplet_urn
+  ]
 }
